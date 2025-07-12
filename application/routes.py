@@ -1,8 +1,9 @@
 from application import app
+from flask import render_template
 
 
 @app.route("/")
 @app.route("/index")
 def index():
     """Index route"""
-    return "<h1>Welcome to the Enrollment Application!</h1>"
+    return render_template("index.html")
