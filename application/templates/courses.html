@@ -29,7 +29,7 @@
                 <td>{{ dData["credits"] }}</td>
                 <td>{{ dData["term"] }}</td>
                 <td>
-                    <form action="{{ url_for('enrollment') }}" method="GET">
+                    <form action="{{ url_for('enrollment') }}" method="POST">
                         <input type="hidden" name="courseID" value="{{ dData['courseID'] }}">
                         <input type="hidden" name="title" value="{{ dData['title'] }}">
                         <input type="hidden" name="term" value="{{ dData['term'] }}">
