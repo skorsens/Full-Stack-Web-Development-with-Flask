@@ -16,7 +16,7 @@ def login():
 
 @app.route("/courses")
 def courses():
-    return render_template("course.html", login=False)
+    return render_template("courses.html", login=False)
 
 
 @app.route("/register")
