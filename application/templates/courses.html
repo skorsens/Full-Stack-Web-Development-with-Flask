@@ -29,7 +29,12 @@
                 <td>{{ dData["credits"] }}</td>
                 <td>{{ dData["term"] }}</td>
                 <td>
-                    <button>Enroll</button>
+                    <form action="{{ url_for('enrollment') }}" method="GET">
+                        <input type="hidden" name="courseID" value="{{ dData['courseID'] }}">
+                        <input type="hidden" name="title" value="{{ dData['title'] }}">
+                        <input type="hidden" name="term" value="{{ dData['term'] }}">
+                        <button>Enroll</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
