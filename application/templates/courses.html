@@ -1,5 +1,5 @@
     {% extends "layout.html" %}
-    
+
     {% block content %}
     <h1>Course Offerings</h1>
 
@@ -21,56 +21,18 @@
             <tbody>
 
             <!-- Construct the rest of courses here -->
+            {% for dData in lCoursesData %}
             <tr>
-                <td scope='row'>1111</td>
-                <td>PHP 111</td>
-                <td>Intro to PHP</td>
-                <td>3</td>
-                <td>Fall, Spring</td>
+                <td scope='row'>{{ dData["courseID"] }}</td>
+                <td>{{ dData["title"] }}</td>
+                <td>{{ dData["description"] }}</td>
+                <td>{{ dData["credits"] }}</td>
+                <td>{{ dData["term"] }}</td>
                 <td>
                     <button>Enroll</button>
                 </td>
             </tr>
-            <tr>
-                <td scope='row'>2222</td>
-                <td>Java 1</td>
-                <td>Intro to Java Programming</td>
-                <td>4</td>
-                <td>Spring</td>
-                <td>
-                    <button>Enroll</button>
-                </td>
-            </tr>
-            <tr>
-                <td scope='row'>3333</td>
-                <td>Adv PHP 201</td>
-                <td>Advanced PHP Programming</td>
-                <td>3</td>
-                <td>Fall</td>
-                <td>
-                    <button>Enroll</button>
-                </td>
-            </tr>
-            <tr>
-                <td scope='row'>4444</td>
-                <td>Angular 1</td>
-                <td>Intro to Angular</td>
-                <td>3</td>
-                <td>Fall, Spring</td>
-                <td>
-                    <button>Enroll</button>
-                </td>
-            </tr>
-            <tr>
-                <td scope='row'>5555</td>
-                <td>Java 2</td>
-                <td>Advanced Java Programming</td>
-                <td>4</td>
-                <td>Fall</td>
-                <td>
-                    <button>Enroll</button>
-                </td>
-            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
