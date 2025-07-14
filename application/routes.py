@@ -1,7 +1,9 @@
 import json
 
-from application import app, db
+from application import app
 from flask import render_template, request, Response
+from application.models import Enrollment, User, Course
+
 
 lCoursesData = [
     {
@@ -97,14 +99,6 @@ def api(idx: str = None):
     return Response(json.dumps(jdata), mimetype="application/json", status=status)
 
 
-class User(db.Document):
-    user_id = db.IntField(unique=True)
-    first_name = db.StringField(max_length=50)
-    last_name = db.StringField(max_length=50)
-    email = db.StringField(max_length=50)
-    password = db.StringField(max_length=50)
-
-
 @app.route("/user")
 def user():
     # User(
@@ -124,4 +118,3 @@ def user():
 
     users = User.objects.all()
     return render_template("user.html", users=users)
-
