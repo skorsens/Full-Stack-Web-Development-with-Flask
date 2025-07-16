@@ -1,7 +1,7 @@
 import json
 
 from application import app
-from flask import render_template, request, Response, flash, redirect
+from flask import render_template, request, Response, flash, redirect, url_for
 
 from application.forms import LoginForm, RegisterForm
 from application.models import Enrollment, User, Course
@@ -58,11 +58,18 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        if request.form.get("email") == "test@uta.com":
-            flash("You have successfully logged in!", "success")
+        # request.form.get("email") == form.email.data
+        email = form.email.data
+        password = form.password.data
+
+        user = User.objects(email=email).first()
+        if not user:
+            flash(f"The email not found: {email}. Please try again.", "danger")
+        elif user.check_password(password):
+            flash(f"{user.first_name}: You have successfully registered!", "success")
             return redirect("/index")
         else:
-            flash("Something went wrong. Please try again.", "danger")
+            flash(f"Wrong password {password}. Please try again.", "danger")
 
     return render_template("login.html", title="Login", form=form, login=True)
 
@@ -80,11 +87,22 @@ def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        if request.form.get("email") == "test@uta.com":
-            flash("You have successfully registered!", "success")
-            return redirect("/index")
-        else:
-            flash("Something went wrong. Please try again.", "danger")
+        # request.form.get("email") == form.email.data
+        email = form.email.data
+        password = form.password.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+
+        user_id = User.objects.count() + 1
+
+        user = User(
+            user_id=user_id, email=email, first_name=first_name, last_name=last_name
+        )
+        user.set_password(password)
+        user.save()
+
+        flash(f"{user.first_name}: You have successfully registered!", "success")
+        return redirect(url_for("index"))
 
     return render_template(
         "register.html", title="New User Registration", form=form, register=True
