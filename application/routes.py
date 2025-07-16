@@ -3,7 +3,7 @@ import json
 from application import app
 from flask import render_template, request, Response, flash, redirect
 
-from application.forms import LoginForm
+from application.forms import LoginForm, RegisterForm
 from application.models import Enrollment, User, Course
 
 
@@ -75,9 +75,20 @@ def courses(term="Spring 2019"):
     )
 
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template("register.html", register=True)
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        if request.form.get("email") == "test@uta.com":
+            flash("You have successfully registered!", "success")
+            return redirect("/index")
+        else:
+            flash("Something went wrong. Please try again.", "danger")
+
+    return render_template(
+        "register.html", title="New User Registration", form=form, register=True
+    )
 
 
 @app.route("/enrollment", methods=["GET", "POST"])
