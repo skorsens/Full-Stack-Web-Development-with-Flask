@@ -18,7 +18,7 @@ def index():
 def login():
     if session.get("user_name"):
         flash(f"Welcome back, {session['user_name']}!", "success")
-        return redirect("/index")
+        return redirect(url_for("index"))
 
     form = LoginForm()
 
@@ -39,6 +39,13 @@ def login():
             flash(f"Wrong password {password}. Please try again.", "danger")
 
     return render_template("login.html", title="Login", form=form, login=True)
+
+
+@app.route("/logout")
+def logout():
+    session.pop("user_name")
+
+    return redirect(url_for("index"))
 
 
 @app.route("/courses")
@@ -84,9 +91,13 @@ def register():
 
 @app.route("/enrollment", methods=["GET", "POST"])
 def enrollment():
+    if not session.get("user_name"):
+        flash(f"Please login.", "success")
+        return redirect(url_for("login"))
+
     courseID = request.form.get("courseID")
     courseTitle = request.form.get("title")
-    user_id = 1
+    user_id = session.get("user_id")
 
     mongoDbPipeline = [
         {
