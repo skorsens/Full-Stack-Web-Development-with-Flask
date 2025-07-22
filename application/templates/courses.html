@@ -21,18 +21,18 @@
             <tbody>
 
             <!-- Construct the rest of courses here -->
-            {% for dData in lCoursesData %}
+            {% for dCourseData in lCoursesData %}
             <tr>
-                <td scope='row'>{{ dData["courseID"] }}</td>
-                <td>{{ dData["title"] }}</td>
-                <td>{{ dData["description"] }}</td>
-                <td>{{ dData["credits"] }}</td>
-                <td>{{ dData["term"] }}</td>
+                <td scope='row'>{{ dCourseData["courseID"] }}</td>
+                <td>{{ dCourseData["title"] }}</td>
+                <td>{{ dCourseData["description"] }}</td>
+                <td>{{ dCourseData["credits"] }}</td>
+                <td>{{ dCourseData["term"] }}</td>
                 <td>
                     <form action="{{ url_for('enrollment') }}" method="POST">
-                        <input type="hidden" name="courseID" value="{{ dData['courseID'] }}">
-                        <input type="hidden" name="title" value="{{ dData['title'] }}">
-                        <input type="hidden" name="term" value="{{ dData['term'] }}">
+                        <input type="hidden" name="courseID" value="{{ dCourseData['courseID'] }}">
+                        <input type="hidden" name="title" value="{{ dCourseData['title'] }}">
+                        <input type="hidden" name="term" value="{{ dCourseData['term'] }}">
                         <button>Enroll</button>
                     </form>
                 </td>
