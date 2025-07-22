@@ -1,7 +1,7 @@
 import json
 
 from application import app
-from flask import render_template, request, Response, flash, redirect, url_for
+from flask import render_template, request, Response, flash, redirect, url_for, session
 
 from application.forms import LoginForm, RegisterForm
 from application.models import Enrollment, User, Course
@@ -16,6 +16,10 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if session.get("user_name"):
+        flash(f"Welcome back, {session['user_name']}!", "success")
+        return redirect("/index")
+
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -28,6 +32,8 @@ def login():
             flash(f"The email not found: {email}. Please try again.", "danger")
         elif user.check_password(password):
             flash(f"{user.first_name}: You have successfully registered!", "success")
+            session["user_id"] = user.user_id
+            session["user_name"] = user.first_name
             return redirect("/index")
         else:
             flash(f"Wrong password {password}. Please try again.", "danger")
@@ -47,6 +53,10 @@ def courses(term="Spring 2019"):
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if session.get("user_name"):
+        flash(f"Welcome back, {session['user_name']}!", "success")
+        return redirect("/index")
+
     form = RegisterForm()
 
     if form.validate_on_submit():
@@ -103,8 +113,8 @@ def enrollment():
             }
         },
         {"$unwind": {"path": "$r2", "preserveNullAndEmptyArrays": False}},
-        {"$match": { "user_id": user_id }},
-        {"$sort": { "courseID": 1 }},
+        {"$match": {"user_id": user_id}},
+        {"$sort": {"courseID": 1}},
     ]
     if courseID:
         if Enrollment.objects(user_id=user_id, courseID=courseID):
