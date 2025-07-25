@@ -1,13 +1,14 @@
 from flask import Flask
 from config import Config
-from flask_mongoengine import MongoEngine
-
+from mongoengine import connect
 
 app = Flask(__name__)
-
 app.config.from_object(Config)
 
-db = MongoEngine(app)
-
+connect(
+    db=app.config['MONGODB_DB'],
+    host=app.config['MONGODB_HOST'],
+    port=app.config['MONGODB_PORT'],
+)
 
 from application import routes
