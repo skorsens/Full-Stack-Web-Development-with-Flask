@@ -1,6 +1,3 @@
-import json
-
-from application import app, api
 from flask import (
     render_template,
     request,
@@ -10,10 +7,14 @@ from flask import (
     url_for,
     session,
 )
-from flask_restx import Resource, fields
 
+from application import app, api
 from application.forms import LoginForm, RegisterForm
 from application.models import Enrollment, User, Course
+from application.api.user import user_namespace
+
+
+api.add_namespace(user_namespace, path="/api/user")
 
 
 @app.route("/")
@@ -181,70 +182,3 @@ def user():
 
     users = User.objects.all()
     return render_template("user.html", users=users)
-
-
-dPostUserModel = api.model(
-    "User",
-    {
-        "email": fields.String(required=True, description="User email"),
-        "first_name": fields.String(required=True, description="First name"),
-        "last_name": fields.String(required=True, description="Last name"),
-        "password": fields.String(required=True, description="Password"),
-    },
-)
-
-dPutUserModel = api.model(
-    "User",
-    {
-        "email": fields.String(required=False, description="User email"),
-        "first_name": fields.String(required=False, description="First name"),
-        "last_name": fields.String(required=False, description="Last name"),
-        "password": fields.String(required=False, description="Password"),
-    },
-)
-
-
-@api.route("/api", "/api/")
-class CGetAndPostUsers(Resource):
-    def get(self):
-        Users = User.objects.all()
-        return Users.to_json()
-
-    @api.expect(dPostUserModel)
-    def post(self):
-        payload = api.payload
-        user_id = User.objects.count() + 1
-        email = payload["email"]
-        first_name = payload["first_name"]
-        last_name = payload["last_name"]
-        password = payload["password"]
-
-        user = User(
-            user_id=user_id, email=email, first_name=first_name, last_name=last_name
-        )
-        user.set_password(password)
-        user.save()
-
-        return User.objects(user_id=user_id).first().to_json()
-
-
-@api.route("/api/<int:idx>")
-class CGetUpdateDeleteUser(Resource):
-    def get(self, idx: int):
-        UserIdx = User.objects(user_id=idx).first()
-
-        if not UserIdx:
-            return f"User {idx} does not exist", 404
-
-        return UserIdx.to_json()
-
-    @api.expect(dPutUserModel)
-    def put(self, idx: int):
-        UserData = api.payload
-        User.objects(user_id=idx).update(**UserData)
-        return User.objects(user_id=idx).to_json()
-
-    def delete(self, idx: int):
-        User.objects(user_id=idx).delete()
-
-        return f"User {idx} has been deleted", 200
