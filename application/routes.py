@@ -183,13 +183,23 @@ def user():
     return render_template("user.html", users=users)
 
 
-user_model = api.model(
+dPostUserModel = api.model(
     "User",
     {
         "email": fields.String(required=True, description="User email"),
         "first_name": fields.String(required=True, description="First name"),
         "last_name": fields.String(required=True, description="Last name"),
         "password": fields.String(required=True, description="Password"),
+    },
+)
+
+dPutUserModel = api.model(
+    "User",
+    {
+        "email": fields.String(required=False, description="User email"),
+        "first_name": fields.String(required=False, description="First name"),
+        "last_name": fields.String(required=False, description="Last name"),
+        "password": fields.String(required=False, description="Password"),
     },
 )
 
@@ -200,7 +210,7 @@ class CGetAndPostUsers(Resource):
         Users = User.objects.all()
         return Users.to_json()
 
-    @api.expect(user_model)
+    @api.expect(dPostUserModel)
     def post(self):
         payload = api.payload
         user_id = User.objects.count() + 1
@@ -227,3 +237,14 @@ class CGetUpdateDeleteUser(Resource):
             return f"User {idx} does not exist", 404
 
         return UserIdx.to_json()
+
+    @api.expect(dPutUserModel)
+    def put(self, idx: int):
+        UserData = api.payload
+        User.objects(user_id=idx).update(**UserData)
+        return User.objects(user_id=idx).to_json()
+
+    def delete(self, idx: int):
+        User.objects(user_id=idx).delete()
+
+        return f"User {idx} has been deleted", 200
