@@ -9,9 +9,8 @@ from flask import (
     redirect,
     url_for,
     session,
-    jsonify,
 )
-from flask_restx import Resource
+from flask_restx import Resource, fields
 
 from application.forms import LoginForm, RegisterForm
 from application.models import Enrollment, User, Course
@@ -184,11 +183,39 @@ def user():
     return render_template("user.html", users=users)
 
 
+user_model = api.model(
+    "User",
+    {
+        "email": fields.String(required=True, description="User email"),
+        "first_name": fields.String(required=True, description="First name"),
+        "last_name": fields.String(required=True, description="Last name"),
+        "password": fields.String(required=True, description="Password"),
+    },
+)
+
+
 @api.route("/api", "/api/")
 class CGetAndPostUsers(Resource):
     def get(self):
         Users = User.objects.all()
         return Users.to_json()
+
+    @api.expect(user_model)
+    def post(self):
+        payload = api.payload
+        user_id = User.objects.count() + 1
+        email = payload["email"]
+        first_name = payload["first_name"]
+        last_name = payload["last_name"]
+        password = payload["password"]
+
+        user = User(
+            user_id=user_id, email=email, first_name=first_name, last_name=last_name
+        )
+        user.set_password(password)
+        user.save()
+
+        return User.objects(user_id=user_id).first().to_json()
 
 
 @api.route("/api/<int:idx>")
