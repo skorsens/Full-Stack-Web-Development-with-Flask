@@ -12,4 +12,3 @@ class Config:
     MONGODB_DB = "UTA_Enrollment"
     MONGODB_HOST = "127.0.0.1"
     MONGODB_PORT = 27017
-

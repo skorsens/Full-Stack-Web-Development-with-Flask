@@ -1,7 +1,17 @@
 import json
 
-from application import app
-from flask import render_template, request, Response, flash, redirect, url_for, session
+from application import app, api
+from flask import (
+    render_template,
+    request,
+    Response,
+    flash,
+    redirect,
+    url_for,
+    session,
+    jsonify,
+)
+from flask_restx import Resource
 
 from application.forms import LoginForm, RegisterForm
 from application.models import Enrollment, User, Course
@@ -153,24 +163,6 @@ def enrollment():
     )
 
 
-@app.route("/api/")
-@app.route("/api/<idx>")
-def api(idx: str = None):
-    status = 200
-
-    if idx is None:
-        jdata = lCoursesData
-    else:
-        try:
-            nIdx = int(idx)
-            jdata = lCoursesData[nIdx]
-        except (ValueError, IndexError):
-            jdata = {"error": f"Course id {idx} not found"}
-            status = 404
-
-    return Response(json.dumps(jdata), mimetype="application/json", status=status)
-
-
 @app.route("/user")
 def user():
     # User(
@@ -190,3 +182,21 @@ def user():
 
     users = User.objects.all()
     return render_template("user.html", users=users)
+
+
+@api.route("/api", "/api/")
+class CGetAndPostUsers(Resource):
+    def get(self):
+        Users = User.objects.all()
+        return Users.to_json()
+
+
+@api.route("/api/<int:idx>")
+class CGetUpdateDeleteUser(Resource):
+    def get(self, idx: int):
+        UserIdx = User.objects(user_id=idx).first()
+
+        if not UserIdx:
+            return f"User {idx} does not exist", 404
+
+        return UserIdx.to_json()
